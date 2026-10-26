@@ -44,8 +44,12 @@ sh tools/setup.sh /path/to/python3.14
 別OSのvenvや不完全なvenvも自動で修復・削除しません。
 
 Python依存は `requirements.txt`、Node依存は `package.json` と `package-lock.json` で固定します。
-1.4.2ではPlaywright Coreを1.63.0に更新し、NumPy 2.5.3・SciPy 1.18.1・Pillow 12.3.0・
+1.4.2ではPlaywright Coreを1.63.0に更新し、NumPy 2.5.3・SciPy 1.18.1・
 imageio-ffmpeg 0.6.0・GSAP 3.13.0は維持します。
+Pillowはセキュリティ修正として12.3.0から13.0.0へ更新しています。
+GHSA-8g5g-8vmr-9782（JPEGデコード時のヒープバッファオーバーフロー）と
+GHSA-5xm2-6676-qcp9の修正版を採用し、共通API・素材・作品の `sharedVersion` は変更しません。
+既存環境にも、セットアップを再実行して固定依存版を適用してください。
 Playwrightはブラウザの更新に合わせて確認する依存です。`latest` がalpha版を指す取得元もあるため、
 安定版を番号指定します。Playwright 1.64.0とNumPy 2.5.4は公式公開済みですが、
 今回の取得元では取得できないため採用していません。
@@ -71,6 +75,12 @@ macOS／Linuxの全工程は引き続き未検証です。
 Edge 155.0.4283.45・同梱FFmpeg 7.1を使い、Python回帰33件とNode／ブラウザ回帰9件が合格しています。
 オフライン全ビルドでMP4・静止画・QC・依存版とハッシュを記録したmanifestの生成も確認しています。
 この確認にはAzureでの実ナレーション合成、人による視聴・試聴は含めていません。
+
+2026年10月26日のPillow 13.0.0更新時には、WindowsでPython 3.14.8・Node 24.22.1を使い、
+`pip check`、Python回帰32件、Node／ブラウザ回帰9件が合格しています。
+JPEGのコンタクトシート生成、PNGロゴと生成処理の画素一致、
+オフライン全ビルドのMP4・静止画・QC・更新後の依存版を記録したmanifestを確認しています。
+Azure合成、人による画面確認・試聴、macOS／Linuxでの動作確認は実施していません。
 
 ## 基本的な制作方針
 
