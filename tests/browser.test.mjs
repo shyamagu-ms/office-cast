@@ -222,15 +222,20 @@ ${scripts.map(src => `<script src="../${src}"></script>`).join('\n')}`);
             const art = held.g.querySelector('.pp-heldrot g[transform*="translate("]');
             const fist = held.g.querySelector(':scope > ellipse, :scope > path');
             const point = new DOMPoint(grip[0], grip[1]).matrixTransform(art.getScreenCTM());
+            const lens = new DOMPoint(0, 0).matrixTransform(art.getScreenCTM());
             const box = fist.getBoundingClientRect();
-            result[`${kind} ${side} ${pose || 'rest'}`] = Math.hypot(point.x - (box.left + box.width / 2), point.y - (box.top + box.height / 2));
+            const cx = box.left + box.width / 2;
+            result[`${kind} ${side} ${pose || 'rest'}`] = { gap: Math.hypot(point.x - cx, point.y - (box.top + box.height / 2)), lensRight: lens.x > cx + 20 };
             ch.el.remove();
           }
         }
       }
       return result;
     });
-    for (const [name, gap] of Object.entries(gaps)) assert.ok(gap < 1, `Magnifier grip must sit in the fist (${name}: ${gap.toFixed(1)}px)`);
+    for (const [name, { gap, lensRight }] of Object.entries(gaps)) {
+      assert.ok(gap < 1, `Magnifier grip must sit in the fist (${name}: ${gap.toFixed(1)}px)`);
+      assert.ok(lensRight, `Magnifier keeps its own tilt with the lens up and to the right (${name})`);
+    }
     assert.deepEqual(errors, []);
   } finally {
     if (browser) await browser.close();
