@@ -806,7 +806,8 @@
   /* Props.hand(name, ch, side = 'R', opts) – attach a prop to a character's hand via ch.hold().
    *  opts: prop options + { grip:[x,y] (prop-local point that sits in the hand), angle, scale,
    *         thumb:'thumb'|'fist'|'none', upright:false (prop follows the arm instead of staying upright),
-   *         gripInHand (R hand: keep the grip in the hand instead of mirror-symmetric placement) }
+   *         outward (art drawn extending to the right; keep the grip in the hand and point the prop away
+   *         from the body in either hand, e.g. the magnifier lens) }
    *  Returns { g, parts, pose(tl,t,name,dur), arm(tl,t,up,fore,dur,ease), rest(tl,t,dur), turn(tl,t,deg,dur), remove() } */
   Props.hand = (name, ch, side = 'R', opts = {}) => {
     const d = build(name, opts);
@@ -819,12 +820,15 @@
     const hr = ch.opts.bottom === 'skirt' ? 11 : 12;
     // The rig mirrors the right arm.  Pre-mirror the artwork once so text reads correctly, and offset
     // by +grip.x so the prop still extends towards the body (mirror-symmetric placement).
-    // That moves the grip 2*grip.x away from the hand; hold.gripInHand / opts.gripInHand keeps the grip in the hand
-    // and the art's own orientation (e.g. the magnifier lens leans outwards).
-    const gx = (opts.gripInHand ?? h.gripInHand) ? -grip[0] : grip[0];
-    const inner = side === 'R'
-      ? `<g transform="scale(-1 1)"><g transform="scale(${s}) translate(${n(gx)} ${n(-grip[1])})">${d.svg}</g></g>`
-      : `<g transform="scale(${s}) translate(${n(-grip[0])} ${n(-grip[1])})">${d.svg}</g>`;
+    // That moves the grip 2*grip.x away from the hand.  hold.outward / opts.outward instead keeps the grip in the
+    // hand and mirrors the left-hand art, so a prop drawn extending to the right points away from the body in both hands.
+    const outward = opts.outward ?? h.outward ?? false;
+    const place = `<g transform="scale(${s}) translate(${n(-grip[0])} ${n(-grip[1])})">${d.svg}</g>`;
+    const inner = outward
+      ? `<g transform="scale(-1 1)">${place}</g>`
+      : side === 'R'
+        ? `<g transform="scale(-1 1)"><g transform="scale(${s}) translate(${n(grip[0])} ${n(-grip[1])})">${d.svg}</g></g>`
+        : place;
     const thumb = grasp === 'thumb'
       ? (robot ? R(-4, -14, 12, 20, 6, skin, 'transform="rotate(-30)"') : `<ellipse cx="3" cy="-5" rx="5.6" ry="9" fill="${skin}" transform="rotate(-34)"/>`)
       : '';

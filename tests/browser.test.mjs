@@ -225,16 +225,16 @@ ${scripts.map(src => `<script src="../${src}"></script>`).join('\n')}`);
             const lens = new DOMPoint(0, 0).matrixTransform(art.getScreenCTM());
             const box = fist.getBoundingClientRect();
             const cx = box.left + box.width / 2;
-            result[`${kind} ${side} ${pose || 'rest'}`] = { gap: Math.hypot(point.x - cx, point.y - (box.top + box.height / 2)), lensRight: lens.x > cx + 20 };
+            result[`${kind} ${side} ${pose || 'rest'}`] = { gap: Math.hypot(point.x - cx, point.y - (box.top + box.height / 2)), outward: side === 'R' ? lens.x > cx + 20 : lens.x < cx - 20 };
             ch.el.remove();
           }
         }
       }
       return result;
     });
-    for (const [name, { gap, lensRight }] of Object.entries(gaps)) {
+    for (const [name, { gap, outward }] of Object.entries(gaps)) {
       assert.ok(gap < 1, `Magnifier grip must sit in the fist (${name}: ${gap.toFixed(1)}px)`);
-      assert.ok(lensRight, `Magnifier keeps its own tilt with the lens up and to the right (${name})`);
+      assert.ok(outward, `Magnifier lens must lean away from the body (${name})`);
     }
     assert.deepEqual(errors, []);
   } finally {
