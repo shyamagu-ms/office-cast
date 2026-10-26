@@ -1,7 +1,7 @@
 {
   "name": "Office Cast",
   "brand": "SHU WORKS",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "video": {"width": 1920, "height": 1080, "fps": 30},
   "audio": {"sampleRate": 48000, "targetLufs": -16, "maxTruePeak": -1.5},
   "source": "Reusable character and prop assets for Office Cast."

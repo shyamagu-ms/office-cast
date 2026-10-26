@@ -229,7 +229,7 @@
   D.magnifier = () => {
     let s = `<g transform="rotate(40)">${R(-8, 40, 16, 70, 8, PAL.wood)}${R(-10, 36, 20, 14, 4, PAL.dark)}</g>`;
     s += O(0, 0, 46, PAL.dark) + O(0, 0, 37, '#d8ecf6') + P('M-22,-14 A26,26 0 0 1 -6,-28', 'none', 'stroke="#fff" stroke-width="7" stroke-linecap="round"');
-    return { svg: s, box: [-48, -48, 120, 140], hold: { grip: [-58, 76], angle: 0, grasp: 'fist' } };
+    return { svg: s, box: [-48, -48, 120, 140], hold: { grip: [-58, 76], angle: 0, grasp: 'fist', mirror: true } };
   };
 
   // stamp (はんこ) – hand-held. parts: body. anchor = bottom face centre

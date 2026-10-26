@@ -1,7 +1,7 @@
 {
   "id": "template",
   "title": "Office Cast",
-  "sharedVersion": "1.4.2",
+  "sharedVersion": "1.4.3",
   "music": {"preset": "office-main"},
   "soundEffectSeed": 2026
 }

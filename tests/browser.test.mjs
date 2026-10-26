@@ -190,6 +190,54 @@ test('isolated gestures, prop animation, bow and logo survive reverse seeking', 
   }
 });
 
+test('held props stay in either hand while the arm moves', { timeout: 60000 }, async () => {
+  const file = path.join(ROOT, 'tests', `hand-test-${randomBytes(6).toString('hex')}.html`);
+  const scripts = ['node_modules/gsap/dist/gsap.min.js', 'shared/characters/common.js', 'shared/characters/rig.js',
+    'shared/characters/person.js', 'shared/characters/robot.js', 'shared/props/props.js', 'shared/props/props_harness.js'];
+  fs.writeFileSync(file, `<!doctype html><meta charset="utf-8"><div id="stage" style="position:relative;width:1920px;height:1080px"></div>
+${scripts.map(src => `<script src="../${src}"></script>`).join('\n')}`);
+  let browser;
+  try {
+    browser = await chromium.launch({
+      channel: process.env.OFFICE_CAST_BROWSER || 'msedge',
+      args: ['--allow-file-access-from-files', '--force-color-profile=srgb'],
+    });
+    const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(pathToFileURL(file).href);
+    const gaps = await page.evaluate(() => {
+      const stage = document.getElementById('stage');
+      const result = {};
+      for (const kind of ['person', 'robot']) {
+        for (const side of ['L', 'R']) {
+          for (const pose of [null, 'present', 'raise']) {
+            const ch = kind === 'robot' ? Chars.createRobot({ color: 'blue', width: 200 }) : Chars.createPerson({ ...Chars.PEOPLE.yamada, width: 200 });
+            stage.appendChild(ch.el); ch.place(960, 900);
+            const tl = gsap.timeline({ paused: true });
+            const held = Props.hand('magnifier', ch, side);
+            if (pose) held.pose(tl, 0, pose, 0.01);
+            tl.seek(1);
+            const grip = Props.info('magnifier').hold.grip;
+            const art = held.g.querySelector('.pp-heldrot g[transform*="translate("]');
+            const fist = held.g.querySelector(':scope > ellipse, :scope > path');
+            const point = new DOMPoint(grip[0], grip[1]).matrixTransform(art.getScreenCTM());
+            const box = fist.getBoundingClientRect();
+            result[`${kind} ${side} ${pose || 'rest'}`] = Math.hypot(point.x - (box.left + box.width / 2), point.y - (box.top + box.height / 2));
+            ch.el.remove();
+          }
+        }
+      }
+      return result;
+    });
+    for (const [name, gap] of Object.entries(gaps)) assert.ok(gap < 1, `Magnifier grip must sit in the fist (${name}: ${gap.toFixed(1)}px)`);
+    assert.deepEqual(errors, []);
+  } finally {
+    if (browser) await browser.close();
+    fs.rmSync(file, { force: true });
+  }
+});
+
 test('offline build produces MP4, stills, QC and a matching dependency manifest', { timeout: 180000 }, () => {
   const id = 'smoke-test-' + randomBytes(6).toString('hex');
   const dest = path.join(ROOT, 'productions', id);
