@@ -1,0 +1,16 @@
+{
+  "voice": "ja-JP-NaokiNeural",
+  "rate": "-4%",
+  "gap": 0.5,
+  "scenes": [
+    {
+      "id": "s0",
+      "title": "新しい物語",
+      "lead": 1,
+      "tail": 2,
+      "lines": [
+        {"id": "s0a", "text": "同じキャストで、新しい物語を。"}
+      ]
+    }
+  ]
+}

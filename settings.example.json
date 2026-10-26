@@ -1,0 +1,6 @@
+{
+  "speech": {
+    "region": "eastus",
+    "resourceId": "/subscriptions/YOUR_SUBSCRIPTION/resourceGroups/YOUR_GROUP/providers/Microsoft.CognitiveServices/accounts/YOUR_RESOURCE"
+  }
+}

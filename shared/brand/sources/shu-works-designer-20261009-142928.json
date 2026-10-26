@@ -1,0 +1,15 @@
+{
+  "generator": "Microsoft 365 Copilot Chat / Designer",
+  "generatedOn": "2026-10-09",
+  "sourceImage": "shu-works-designer-20261009-142928.png",
+  "sourceDimensions": [1536, 1024],
+  "sourceHasTransparency": false,
+  "localProcessing": {
+    "script": "tools\\prepare_shu_logo.py",
+    "operation": "Recover continuous monochrome ink coverage from the nearly white background, recolor, then crop with 24 pixels of padding. The wordmark and symbol are generated pixels, not manually retypeset.",
+    "backgroundLevel": 244,
+    "inkLevel": 22,
+    "darkBackgroundAsset": "shared\\brand\\shu-works-logo.png",
+    "lightBackgroundAsset": "shared\\brand\\shu-works-logo-ink.png"
+  }
+}

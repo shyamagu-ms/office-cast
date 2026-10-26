@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Office Cast — 小物シート</title>
+<link rel="stylesheet" href="../shared/styles/base.css">
+<style>
+  .stage { background: var(--paper); }
+  .eyebrow { position: absolute; left: 80px; top: 54px; font: 600 15px Inter; letter-spacing: .32em; color: var(--muted); }
+  h1 { position: absolute; left: 76px; top: 78px; margin: 0; font: 900 50px Zen; letter-spacing: .02em; }
+  .meta { position: absolute; right: 80px; top: 92px; font: 500 15px Inter; letter-spacing: .2em; color: var(--muted); text-align: right; line-height: 1.7; }
+  .rule { position: absolute; left: 80px; right: 80px; height: 2px; background: var(--ink); }
+  .rule.thin { height: 1px; background: #cfc9bf; }
+  .sec { position: absolute; font: 600 13px Inter; letter-spacing: .28em; color: var(--muted); white-space: nowrap; }
+  .sec b { font: 700 18px Zen; letter-spacing: .06em; color: var(--ink); margin-right: 14px; }
+  .cell { position: absolute; background: #f5f2ed; border-radius: 6px; }
+  .name { position: absolute; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+  .name b { display: block; font: 700 17px Zen; }
+  .name span { display: block; font: 600 11px Inter; letter-spacing: .1em; color: var(--muted); margin-top: 1px; }
+  .cap { position: absolute; transform: translateX(-50%); font: 500 10.5px Inter; letter-spacing: .08em; color: #a39d93; white-space: nowrap; text-transform: uppercase; }
+  .vline { position: absolute; width: 1px; background: #cfc9bf; }
+  .floor { position: absolute; height: 1px; background: #d8d2c8; }
+  .anchor { position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: var(--accent); opacity: .55; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="eyebrow" id="eyebrow">PROP SHEET</div>
+  <h1 id="title">小物</h1>
+  <div class="meta" id="meta">OFFICE CAST / SHU WORKS<br>FLAT / NO OUTLINE</div>
+  <div class="rule" style="top:160px"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../shared/characters/common.js"></script>
+<script src="../shared/characters/rig.js"></script>
+<script src="../shared/characters/person.js"></script>
+<script src="../shared/characters/robot.js"></script>
+<script src="../shared/props/props.js"></script>
+<script src="../shared/props/props_harness.js"></script>
+<script>
+  const stage = document.getElementById('stage');
+  const tl = gsap.timeline({ paused: true });
+  const PAGE = +(new URLSearchParams(location.search).get('page') || 1);
+  const div = (cls, css, html = '') => { const d = document.createElement('div'); d.className = cls; Object.assign(d.style, css); d.innerHTML = html; stage.appendChild(d); return d; };
+  const px = (v) => v + 'px';
+
+  // a labelled cell with a prop fitted inside (centred on its box). Returns the prop.
+  function cell(x, y, w, h, name, ja, opts = {}, { maxK = 1.2, cap, pad = 18, labelH = 64, k: fixedK, dy = 0 } = {}) {
+    div('cell', { left: px(x), top: px(y), width: px(w), height: px(h) });
+    const info = Props.info(name, opts);
+    const [bx, by, bw, bh] = info.box;
+    const aw = w - pad * 2, ah = h - labelH - pad * 1.4;
+    const k = fixedK || Math.min(maxK, aw / bw, ah / bh);
+    const p = Props.create(name, { ...opts, width: bw * k });
+    stage.appendChild(p.el);
+    const cx = x + w / 2 - (bx + bw / 2) * k, cy = y + pad + ah / 2 - (by + bh / 2) * k + dy;
+    p.place(cx, cy);
+    div('anchor', { left: px(cx), top: px(cy) });
+    div('name', { left: px(x + w / 2), top: px(y + h - labelH + 4) }, `<b>${ja}</b><span>${name}</span>`);
+    if (cap) div('cap', { left: px(x + w / 2), top: px(y + h - 19) }, cap);
+    return p;
+  }
+
+  const head = (eyebrow, title, meta) => {
+    document.getElementById('eyebrow').textContent = eyebrow;
+    document.getElementById('title').textContent = title;
+    document.getElementById('meta').innerHTML = meta;
+  };
+
+  function page1() {
+    head('PROP SHEET 1/4', '小物 — オブジェクト', 'CHARACTER-SCALE OBJECTS<br>ANCHOR ● · PARTS FOR GSAP');
+    const X0 = 80, W = 1760, cols = 9, gap = 12, cw = (W - gap * (cols - 1)) / cols, ch = 270, Y0 = 186;
+    const items = [
+      ['memo', '指示書', { text: '2分くらいで、\nたのむよ', title: '指示書' }, 'held · text'],
+      ['script', '台本', { title: '台本', sub: 'AI動画のいま' }, 'held · title'],
+      ['yenSign', '¥0 札', {}, 'held · text'],
+      ['priceTag', '値札', { text: '¥0' }, 'held · anchor=string'],
+      ['calculator', '電卓', { text: '12,800' }, 'display · keys'],
+      ['key', '鍵', { text: 'GPU' }, 'held · text'],
+      ['camera', 'カメラ', {}, 'flash · button · lens'],
+      ['ball', 'ボール', {}, 'body'],
+      ['soundIcon', '音アイコン', {}, 'waves · cross'],
+      ['laptop', 'ノートPC', {}, 'screen · lines'],
+      ['desk', '机', {}, 'points.surface'],
+      ['monitor', 'モニター', {}, 'screen · video'],
+      ['clock', '時計', { time: { h: 10, m: 10 } }, 'hour · minute'],
+      ['mp4Box', 'MP4 の箱', {}, 'lid'],
+      ['frameMachine', 'MP4 変換機', {}, 'gear · gear2 · lamps'],
+      ['giftBox', 'ギフト箱', { text: 'Remotion' }, 'lid · bow · glow'],
+      ['door', '扉', { label: 'EEVEE' }, 'door · inside · keyhole'],
+      ['gpuChip', 'GPU', {}, 'fan · chip'],
+      ['blenderDisc', '3D ソフトの円', {}, 'sat · sphere'],
+      ['snail', 'カタツムリ', {}, 'body · shell · stalks'],
+      ['ttsMachine', '音声合成マシン', {}, 'slot · grille · lamp'],
+      ['volumeMeter', '音量メーター', { label: 'VOICE', level: 0.7 }, 'level (attr y/height)'],
+      ['bell', 'ベル', {}, 'bell · waves'],
+      ['chainTrack', 'レール', {}, 'points.start / end'],
+      ['domino', 'ドミノ', {}, 'body (pivot = edge)'],
+      ['cube', 'ブロック', {}, 'body'],
+      ['timer', 'タイマー', { text: '2:13' }, 'display · rec'],
+    ];
+    items.forEach(([name, ja, opts, cap], i) => {
+      const r = Math.floor(i / cols), c = i % cols;
+      const big = ['door', 'frameMachine', 'desk', 'ttsMachine'].includes(name);
+      cell(X0 + c * (cw + gap), Y0 + r * (ch + 14), cw, ch, name, ja, opts, { cap, maxK: big ? 1 : name === 'ball' ? 1.6 : 1.15 });
+    });
+  }
+
+  function page2() {
+    head('PROP SHEET 2/4', '小物 — 図解パーツ', 'UI / DIAGRAM GRAPHICS<br>1 UNIT = 1 PX');
+    const Y0 = 186;
+    cell(80, Y0, 560, 330, 'browserWindow', 'ブラウザ窓', { url: 'https://ai-movie.example/video', w: 720, h: 440 }, { cap: 'content · bar · dots' });
+    cell(652, Y0, 560, 330, 'codeSnippet', 'コード片', {}, { cap: 'lines · chs · labels · caret' });
+    cell(1224, Y0, 616, 330, 'timelineBars', 'タイムライン', {}, { cap: 'bars · playhead · rows' });
+    const Y1 = Y0 + 344;
+    cell(80, Y1, 900, 230, 'filmstrip', 'フィルムストリップ', { n: 7 }, { cap: 'frames[] (content fn)' });
+    cell(992, Y1, 220, 230, 'progressBar', '進捗バー', { value: 0.6 }, { cap: 'bar · pct' });
+    cell(1224, Y1, 300, 230, 'waveform', '波形', {}, { cap: 'bars[]' });
+    cell(1536, Y1, 304, 230, 'toolChips', 'ツール名チップ', { cols: 2 }, { cap: 'chips[]' });
+    const Y2 = Y1 + 244, h2 = 290;
+    cell(80, Y2, 250, h2, 'speechBubble', '吹き出し', { text: 'たのむよ' }, { cap: 'bubble · lines · chs' });
+    cell(342, Y2, 250, h2, 'speechBubble', '吹き出し（濃）', { text: 'できた！', dark: true, side: 'right' }, { cap: 'dark · side:right' });
+    cell(604, Y2, 270, h2, 'magicBlob', 'もやもや動画', { text: 'それっぽい動画' }, { cap: 'blob · shape · sparks' });
+    cell(886, Y2, 340, h2, 'yRoad', '分かれ道', { left: 'テキスト→動画', right: 'コード→動画' }, { cap: 'stem · left · right · labels' });
+    cell(1238, Y2, 200, h2, 'codeTag', 'コードタグ', { text: '<svg>' }, { cap: 'text', maxK: 1.4 });
+    cell(1450, Y2, 190, h2, 'arrow', '矢印', { length: 140 }, { cap: 'arrow (scaleX)' });
+    cell(1652, Y2, 188, h2, 'soundIcon', 'ミュート', { muted: true }, { cap: 'muted variant' });
+    // progress bar in the code tag cell bottom? → separate mini row inside the arrow cell is too tight; put under codeTag
+  }
+
+  function page3() {
+    head('PROP SHEET 3/4', '小物 — 持たせ方と縮尺', 'Props.hand(name, ch, side)<br>REST / RAISED POSES');
+    const P = Chars.PEOPLE;
+    div('sec', { left: '80px', top: '186px' }, '<b>手に持つ</b>HELD PROPS — Props.hand() · TEXT NEVER MIRRORED');
+    const G1 = 616;
+    div('floor', { left: '80px', width: '1760px', top: px(G1) });
+    const W = 188, xs = Array.from({ length: 9 }, (_, i) => 160 + i * 200);
+    const rows = [
+      [() => Chars.createPerson({ ...P.tanaka, width: W }), 'memo', 'R', { text: '2分くらいで、\nたのむよ', title: '指示書' }, null, 'memo · R · rest'],
+      [() => Chars.createPerson({ ...P.tanaka, width: W }), 'memo', 'R', { text: '2分くらいで、\nたのむよ', title: '指示書' }, 'present', 'memo · R · present'],
+      [() => Chars.createPerson({ ...P.yamada, width: W }), 'priceTag', 'L', { text: '¥0' }, 'present', 'priceTag · L · present'],
+      [() => Chars.createRobot({ color: 'blue', width: W }), 'calculator', 'R', { text: '0' }, 'present', 'calculator · robot'],
+      [() => Chars.createPerson({ ...P.yamada, width: W }), 'yenSign', 'R', {}, 'raise', 'yenSign · R · raise'],
+      [() => Chars.createRobot({ color: 'red', width: W }), 'script', 'L', { title: '台本' }, null, 'script · robot · L'],
+      [() => Chars.createPerson({ ...P.sato, width: W }), 'script', 'R', { title: '台本', sub: 'AI動画のいま' }, 'present', 'script · R · present'],
+      [() => Chars.createPerson({ ...P.suzuki, width: W }), 'camera', 'R', {}, 'raise', 'camera · R · raise'],
+      [() => Chars.createPerson({ ...P.ito, width: W }), 'key', 'L', { text: 'GPU' }, 'raise', 'key · L · raise'],
+    ];
+    rows.forEach(([make, prop, side, opts, pose, cap], i) => {
+      const ch = make(); stage.appendChild(ch.el); ch.place(xs[i], G1);
+      const held = Props.hand(prop, ch, side, opts);
+      if (pose) held.pose(tl, 0, pose);
+      if (prop === 'yenSign' || prop === 'key') ch.expr(tl, 0, 'happy');
+      div('cap', { left: px(xs[i]), top: px(G1 + 14) }, cap);
+    });
+
+    // true-scale lineup (characters 300px wide → props default scale 0.75)
+    div('rule thin', { top: '680px' });
+    div('sec', { left: '80px', top: '696px' }, '<b>縮尺</b>TRUE SCALE @ CHARACTER WIDTH 300 → SHOWN ×0.5');
+    const G2 = 1036, S = 0.5, cw = 300 * S;
+    div('floor', { left: '80px', width: '1760px', top: px(G2) });
+    const put = (name, x, y, opts = {}) => { const p = Props.create(name, { ...opts, scale: S }); stage.appendChild(p.el); p.place(x, y); return p; };
+    const tan = Chars.createPerson({ ...P.tanaka, width: cw }); stage.appendChild(tan.el); tan.place(220, G2);
+    const desk = put('desk', 380, G2);
+    put('laptop', 380, G2 + desk.points.surface[1] * desk.k);
+    const desk2 = put('desk', 620, G2, { w: 300 });
+    put('monitor', 620, G2 + desk2.points.surface[1] * desk2.k);
+    put('clock', 500, G2 - 470 * S);
+    const rob = Chars.createRobot({ color: 'green', width: cw }); stage.appendChild(rob.el); rob.place(820, G2);
+    Props.hand('calculator', rob, 'R', { text: '¥0' });
+    put('door', 990, G2, { label: 'EEVEE' });
+    put('giftBox', 1140, G2, { text: 'Remotion' });
+    const yam = Chars.createPerson({ ...P.yamada, width: cw }); stage.appendChild(yam.el); yam.place(1300, G2);
+    Props.hand('memo', yam, 'L', {});
+    put('frameMachine', 1490, G2);
+    put('mp4Box', 1490 + 196 * 0.75 * S + 18, G2);
+    put('ttsMachine', 1770, G2);
+    put('volumeMeter', 1665, G2, { label: 'BGM', level: 0.4 });
+  }
+
+  function page4() {
+    head('PROP SHEET 4/4', '小物 — ハーネス入門', 'AI HARNESS 101 · NEW PROPS<br>FLAT / NO OUTLINE');
+    const Y0 = 180, h0 = 250;
+    cell(80, Y0, 230, h0, 'iconCard', '書類', { kind: 'doc', text: '情報・ツール' }, { cap: 'card' });
+    cell(318, Y0, 230, h0, 'iconCard', '盾', { kind: 'shield', text: 'ルール・制限' }, { cap: 'card' });
+    cell(556, Y0, 230, h0, 'iconCard', 'スパナ', { kind: 'wrench', text: '手順・型' }, { cap: 'card' });
+    cell(794, Y0, 230, h0, 'iconCard', '的', { kind: 'target', text: '目的・評価基準' }, { cap: 'card' });
+    cell(1032, Y0, 190, h0, 'gate', '踏切バー', {}, { cap: 'bar (closed)' });
+    cell(1230, Y0, 190, h0, 'redButton', '赤ボタン', {}, { cap: 'cover (open) · button' });
+    cell(1428, Y0, 190, h0, 'redButton', '赤ボタン（閉）', { open: false }, { cap: 'cover closed' });
+    cell(1626, Y0, 214, h0, 'scanner', '検査機', {}, { cap: 'lamps[] · arch' });
+    const Y1 = Y0 + h0 + 12, h1 = 250;
+    cell(80, Y1, 150, h1, 'magnifier', '虫めがね', {}, { cap: 'held' });
+    cell(238, Y1, 150, h1, 'stamp', 'はんこ', {}, { cap: 'body' });
+    cell(396, Y1, 170, h1, 'stampMark', '印影', {}, { cap: 'mark' });
+    cell(574, Y1, 200, h1, 'target', '的＋矢', {}, { cap: 'rings · arrow' });
+    cell(782, Y1, 160, h1, 'shield', '盾（赤）', {}, { cap: 'shield' });
+    cell(950, Y1, 150, h1, 'flag', '小旗', {}, { cap: 'cloth' });
+    cell(1108, Y1, 300, h1, 'copilotBadge', 'GitHub Copilot 名札', {}, { cap: 'text-only · optional href', maxK: 1 });
+    cell(1416, Y1, 424, h1, 'cornerBox', '紹介コーナー窓', {}, { cap: 'frame' });
+    const Y2 = Y1 + h1 + 12, h2 = 1080 - Y2 - 30;
+    cell(80, Y2, 330, h2, 'card6', 'カード（伏せ）', { num: 1, color: Props.PAL.blue }, { cap: 'back', maxK: 1 });
+    cell(418, Y2, 330, h2, 'card6', 'カード①', { num: 1, color: Props.PAL.blue, name: 'Goal / Acceptance', desc: '目的・評価基準', icons: ['target', 'doc'] }, { cap: 'front', maxK: 1 }).parts.front.setAttribute('opacity', 1);
+    cell(756, Y2, 330, h2, 'card6', 'カード⑤', { num: 5, color: Props.PAL.yellow, name: 'Guides', desc: '指示・ルール・手順・型', icons: ['doc', 'bulb'], split: ['渡さない・させない', '読ませて導く\n（保証はない）'] }, { cap: 'front · split', maxK: 1 }).parts.front.setAttribute('opacity', 1);
+    cell(1094, Y2, 330, h2, 'harness', 'ハーネス', { cards: true }, { cap: 'belt · buckle · cards · ring' });
+    // harness on characters + rope
+    div('cell', { left: '1432px', top: px(Y2), width: '408px', height: px(h2) });
+    const G = Y2 + h2 - 30;
+    const tan = Chars.createPerson({ ...Chars.PEOPLE.tanaka, width: 150 }); stage.appendChild(tan.el); tan.place(1500, G);
+    const rob = Chars.createRobot({ color: 'blue', width: 140 }); stage.appendChild(rob.el); rob.place(1660, G);
+    const yam = Chars.createPerson({ ...Chars.PEOPLE.yamada, width: 150 }); stage.appendChild(yam.el); yam.place(1780, G);
+    const h = Props.harnessOn(rob, { cards: true });
+    Props.harnessOn(yam, {});
+    const end = Props.hand('ropeEnd', tan, 'R', {});
+    const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    sv.setAttribute('viewBox', '0 0 1920 1080'); Object.assign(sv.style, { position: 'absolute', left: 0, top: 0, width: '1920px', height: '1080px', overflow: 'visible' });
+    stage.appendChild(sv);
+    const rope = Props.rope(sv, h.ring, end.parts.tip, { sag: 30 });
+    rope.state.on = 1;
+    setTimeout(() => {}, 0);
+    window.__rope = rope;
+  }
+
+  Props.ready().then(async () => {
+    if (!Number.isInteger(PAGE) || PAGE < 1 || PAGE > 4) throw new Error('Prop sheet page must be from 1 to 4.');
+    ({ 1: page1, 2: page2, 3: page3, 4: page4 }[PAGE])();
+    tl.seek(1, false);
+    if (window.__rope) window.__rope.update();
+    await document.fonts.ready;
+    window.__ready = true;
+  }).catch(error => {
+    window.__error = error.message;
+    console.error(error);
+  });
+  window.seek = (t) => {};
+</script>
+</body>
+</html>

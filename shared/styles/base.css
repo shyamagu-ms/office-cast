@@ -1,0 +1,28 @@
+@font-face { font-family: 'Zen'; src: url('../fonts/ZenKakuGothicNew-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: 'Zen'; src: url('../fonts/ZenKakuGothicNew-Medium.ttf'); font-weight: 500; }
+@font-face { font-family: 'Zen'; src: url('../fonts/ZenKakuGothicNew-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: 'Zen'; src: url('../fonts/ZenKakuGothicNew-Black.ttf'); font-weight: 900; }
+@font-face { font-family: 'Inter'; src: url('../fonts/Inter.ttf'); font-weight: 100 900; }
+
+:root {
+  --ink: #1f1d1b;
+  --paper: #ece8e1;
+  --muted: #8c867d;
+  --accent: #d0553e;
+  --night: #16161a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #111; }
+body { font-family: 'Inter', 'Zen', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+.ja { font-family: 'Zen', sans-serif; }
+
+.stage {
+  position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: var(--paper);
+}
+.char { position: absolute; }
+.char svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* preview mode: fit 1920x1080 stage into the window */
+body.preview { display: grid; place-items: center; min-height: 100vh; }
+body.preview .stage { transform-origin: center; }

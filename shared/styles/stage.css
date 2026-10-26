@@ -1,0 +1,19 @@
+.scene { position: absolute; inset: 0; }
+.scene.dark { background: var(--night); color: #f2efe9; }
+.scene .floor { position: absolute; left: 96px; right: 96px; top: 930px; height: 1px; background: #d6d0c6; }
+.scene.dark .floor { background: #555158; }
+.scene .eyebrow { font: 600 20px Inter; letter-spacing: .22em; color: var(--accent); }
+.scene .heading { font: 900 68px Zen; letter-spacing: .02em; line-height: 1.3; }
+.scene .description { font: 500 32px Zen; line-height: 1.7; color: var(--muted); }
+.scene.dark .description { color: #bdb6ad; }
+.cast-label { font: 700 23px Zen; text-align: center; }
+.brand { font: 600 27px Inter; letter-spacing: .25em; }
+#caption { position: absolute; left: 96px; right: 96px; bottom: 54px; text-align: center; z-index: 100; visibility: hidden; }
+#caption span { display: block; font: 700 40px Zen; line-height: 1.5; text-wrap: balance; }
+.stage[data-theme="dark"] #caption { color: #f2efe9; }
+.preview-bar { display: none; }
+body.preview { display: block; overflow: hidden; }
+body.preview .stage { position: absolute; }
+body.preview .preview-bar { display: flex; position: fixed; z-index: 200; bottom: 8px; left: 12px; right: 12px; gap: 12px; align-items: center; color: #fff; font: 14px Inter, Zen, sans-serif; }
+.preview-bar button { padding: 8px 14px; border: 1px solid #aaa; border-radius: 5px; background: #24211f; color: #fff; cursor: pointer; }
+#status { color: #ffb3a7; }

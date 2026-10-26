@@ -1,0 +1,20 @@
+{
+  "office-main": {
+    "description": "Original C-major Office Cast theme, marimba/pizzicato/woodblock",
+    "bpm": 120,
+    "melodyOffset": 0,
+    "layers": ["marimba", "bass", "woodblock", "glock", "shaker"]
+  },
+  "office-light": {
+    "description": "A quieter variation of the same theme",
+    "bpm": 120,
+    "melodyOffset": 0,
+    "layers": ["marimba", "bass", "woodblock"]
+  },
+  "calm-piano": {
+    "description": "Piano and pad instruments for a calm arrangement",
+    "bpm": 120,
+    "melodyOffset": 8,
+    "layers": ["piano", "pad"]
+  }
+}

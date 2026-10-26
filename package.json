@@ -1,0 +1,20 @@
+{
+  "name": "office-cast",
+  "version": "1.4.2",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Reusable Office Cast video production toolkit by SHU WORKS",
+  "engines": {
+    "node": "^24.21.0"
+  },
+  "scripts": {
+    "new": "node tools/new.mjs",
+    "render": "node tools/render.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "gsap": "3.13.0",
+    "playwright-core": "1.63.0"
+  }
+}

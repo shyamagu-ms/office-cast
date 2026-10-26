@@ -1,0 +1,15 @@
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+settings.local.json
+.env
+.env.*
+!.env.example
+.playwright-cli/
+.publish/
+catalog/out/
+/shared/brand/copilot-icon-black.svg
+productions/*/audio/
+productions/*/build/
+productions/*/out/
